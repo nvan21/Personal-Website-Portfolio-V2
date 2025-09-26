@@ -1,0 +1,37 @@
+---
+import { getCollection, type CollectionEntry } from "astro:content";
+
+import BackdropText from "./BackdropText.astro";
+import ResearchCard from "./ResearchCard.astro";
+
+const allResearchEntries = await getCollection("research");
+
+type GroupedResearch = Record<string, CollectionEntry<"research">[]>;
+const groupedByLab = allResearchEntries.reduce((acc, entry) => {
+  const labName = entry.data.lab;
+  if (!acc[labName]) {
+    acc[labName] = [];
+  }
+  acc[labName].push(entry);
+  return acc;
+}, {} as GroupedResearch);
+
+console.log(groupedByLab)
+---
+
+<div id="research">
+  <BackdropText backdropText="Research" text="Research" />
+  {
+    Object.entries(groupedByLab).map(([labName, entries]) => (
+        <div class="text-3xl font-source text-header border-1 border-header-2 py-3 justify-center flex rounded-lg">
+          {labName}
+        </div>
+
+        <div class="projects-list space-y-8">
+          {entries.map((entry) => (
+            <ResearchCard title={entry.data.title} authors={entry.data.authors} content = {entry.body} date = {entry.data.date} thumbnailUrl={entry.data.thumbnailUrl} githubUrl={entry.data.githubUrl} publicationUrl={entry.data.publicationUrl}/>
+          ))}
+        </div>
+    ))
+  }
+</div>

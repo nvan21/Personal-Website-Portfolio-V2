@@ -1,0 +1,45 @@
+---
+import { render } from "astro:content";
+
+interface Props {
+  role: string;
+  date: Date;
+  thumbnailUrl: string;
+  project: any;
+  content: any;
+}
+
+const { role, date, thumbnailUrl, project, content } = Astro.props;
+
+const { Content, headers } = await content.render();
+console.log(Content);
+---
+
+<div class="flex space-x-10 mt-8 mx-8">
+  <div class="w-2/5 max-h-[400px]">
+    <img
+      src={thumbnailUrl}
+      class="rounded-lg object-scale-down m-auto h-full"
+    />
+  </div>
+
+  <div class="space-y-3 w-3/5 flex justify-center flex-col">
+    <div class="text-header text-xl font-source">{project}</div>
+    <div class="text-body text-sm italic font-roboto">{role}</div>
+    <div class="text-body text-md prose prose-li:font-roboto">
+      <Content />
+    </div>
+    <div class="justify-end flex">
+      <div
+        class="bg-lime-500 text-background font-bold w-max h-max py-1 px-4 font-source rounded-lg"
+      >
+        {
+          new Intl.DateTimeFormat("en-US", {
+            month: "long",
+            year: "numeric",
+          }).format(date)
+        }
+      </div>
+    </div>
+  </div>
+</div>

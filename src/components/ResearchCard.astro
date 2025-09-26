@@ -1,0 +1,46 @@
+---
+interface Props {
+  title: string;
+  authors: string;
+  content: string;
+  date: string;
+  thumbnailUrl: string;
+  githubUrl: string;
+  publicationUrl: string;
+}
+
+const {
+  title,
+  authors,
+  content,
+  date,
+  thumbnailUrl,
+  githubUrl,
+  publicationUrl,
+} = Astro.props;
+
+import { Icon } from "astro-icon/components";
+---
+
+<div class="flex space-x-10 p-8">
+  <img src={thumbnailUrl} class="rounded-lg w-2/5 h-full" />
+
+  <div class="space-y-3 w-3/5 flex justify-center flex-col">
+    <div class="text-header text-xl font-source">{title}</div>
+    <div class="text-body text-sm italic font-roboto">{authors}</div>
+    <div class="text-body text-md font-roboto">{content}</div>
+    <div class="justify-between flex items-center">
+      <div class="text-5xl text-lime-500 flex space-x-2">
+        <a href={githubUrl} target="_blank"><Icon name="mdi:github" /></a>
+        <a href={publicationUrl} target="_blank"
+          ><Icon name="mdi:note-text" /></a
+        >
+      </div>
+      <div
+        class="bg-lime-500 text-background font-bold w-max h-max py-1 px-4 font-source rounded-lg"
+      >
+        {date}
+      </div>
+    </div>
+  </div>
+</div>

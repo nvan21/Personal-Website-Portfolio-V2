@@ -1,16 +1,97 @@
 ---
-
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro'
+import About from '../components/About.astro';
+import Research from "../components/Research.astro";
+import Industry from "../components/Industry.astro";
+import Projects from "../components/Projects.astro";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout>
+    <Navbar />
+    <About />
+    <Research />
+    <Industry />
+    <Projects />
+</Layout>
+<!-- 
+<script>
+  import gsap from 'gsap';
+  import ScrollTrigger from 'gsap/ScrollTrigger';
+  import tailwindConfig from '../../tailwind.config.mjs';
+
+  // const mainColor = tailwindConfig.theme.extend.colors.main;
+  // const secondaryColor = tailwindConfig.theme.extend.colors.secondary;
+
+  const mainColor = '#FFFFFF';
+  const secondaryColor = tailwindConfig.theme.extend.colors.secondary;
+  gsap.registerPlugin(ScrollTrigger);
+
+  function animateNavbox(
+    targetText: string | HTMLElement,
+    targetCircle: string | HTMLElement,
+    trigger: string | HTMLElement,
+    triggerStart: string,
+    triggerEnd: string
+  ) {
+    gsap.to(targetCircle, {
+      width: '24px',
+      height: '24px',
+      backgroundColor: 'transparent',
+      borderStyle: 'dashed',
+      borderWidth: '2px',
+      borderColor: mainColor,
+      duration: 0.3,
+      ease: 'power2.out',
+      transformOrigin: 'center center',
+      scrollTrigger: {
+        trigger: trigger,
+        start: triggerStart,
+        markers: false,
+        end: triggerEnd,
+        scroller: 'body',
+        toggleActions: 'play reverse play reverse',
+        onEnter: () => {
+          gsap.to(targetText, { color: mainColor, duration: 0.3 });
+        },
+        onLeave: () => {
+          gsap.to(targetText, { color: secondaryColor, duration: 0.3 });
+        },
+        onEnterBack: () => {
+          gsap.to(targetText, { color: mainColor, duration: 0.3 });
+        },
+        onLeaveBack: () => {
+          gsap.to(targetText, { color: secondaryColor, duration: 0.3 });
+        },
+      },
+    });
+  }
+  animateNavbox(
+    '#about-text',
+    '#about-circle',
+    '#about',
+    'top-=5% 15%',
+    'bottom+=10 15%'
+  );
+  animateNavbox(
+    '#research-text',
+    '#research-circle',
+    '#research',
+    'top-=10 15%',
+    'bottom+=10 15%'
+  );
+  animateNavbox(
+    '#industry-text',
+    '#industry-circle',
+    '#industry',
+    'top-=10 15%',
+    'bottom+=10 15%'
+  );
+  animateNavbox(
+    '#projects-text',
+    '#projects-circle',
+    '#projects',
+    'top-=10 15%',
+    'bottom+=10 15%'
+  );
+</script> -->

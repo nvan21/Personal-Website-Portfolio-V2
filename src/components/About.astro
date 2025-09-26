@@ -1,0 +1,41 @@
+---
+import BackdropText from "./BackdropText.astro";
+
+import { Icon } from "astro-icon/components";
+import SkillsCard from "./SkillsCard.astro";
+---
+
+<div id="about">
+  <BackdropText backdropText="About Me" text="About Me" />
+  <div class="flex flex-row space-x-3">
+    <div class="w-7/10">
+      <p class="text-header font-source text-5xl font-bold">
+        Nathan Van Utrecht
+      </p>
+      <p class="text-header font-source text-2xl mt-2">
+        Roboticist, Mechanical Engineer, and AI Researcher
+      </p>
+      <p class="mt-4 font-roboto text-body text-lg">
+        I am an MS student in the Intelligent Systems, Robotics, and Controls
+        program at UC San Diego. Currently my research interests are deep
+        reinforcement learning, the sim-to-real gap, and autonomous driving.
+      </p>
+
+      <div class="my-4 flex flex-row flex-wrap gap-4">
+        <SkillsCard iconName="eos-icons:machine-learning-outlined"
+          >Reinforcement Learning</SkillsCard
+        >
+        <SkillsCard iconName="mdi:robot-outline">Robotics</SkillsCard>
+        <SkillsCard iconName="hugeicons:vision">Computer Vision</SkillsCard>
+        <SkillsCard iconName="simple-icons:python">Python</SkillsCard>
+        <SkillsCard iconName="mdi:car">Autonomous Driving</SkillsCard>
+      </div>
+    </div>
+    <div class="w-3/10">
+      <img
+        src="headshot.png"
+        class="border-4 border-body aspect-square w-full rounded-full"
+      />
+    </div>
+  </div>
+</div>

@@ -1,0 +1,15 @@
+---
+interface Props {
+  backdropText: string;
+  text: string;
+}
+
+const { backdropText, text } = Astro.props;
+---
+
+<p
+  class="font-main mt-8 text-header text-2xl overflow-hidden relative mb-5 pt-4 font-medium uppercase tracking-wider before:pr-2 before:content-['//'] after:absolute after:left-0 after:top-0 after:font-header after:text-5xl after:font-bold after:uppercase after:text-transparent after:opacity-30 after:content-[attr(data-backdrop-text)] after:text-stroke-1 after:text-stroke-white"
+  data-backdrop-text={backdropText}
+>
+  {text}
+</p>

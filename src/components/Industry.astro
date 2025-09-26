@@ -1,0 +1,70 @@
+---
+import { getCollection, type CollectionEntry } from "astro:content";
+
+import BackdropText from "./BackdropText.astro";
+import IndustryCard from "./IndustryCard.astro";
+
+// Fetch all entries from the 'industry' collection
+const allIndustryEntries = await getCollection('industry');
+
+// Define the shape of the object that will hold the grouped entries
+type GroupedIndustry = Record<string, CollectionEntry<'industry'>[]>;
+
+const entriesWithContent = await Promise.all(
+  allIndustryEntries.map(async (entry) => {
+    const { Content } = await entry.render();
+    return {
+      ...entry, // Keep all original entry properties (id, slug, data, etc.)
+      Content,   // Add the rendered Content component
+    };
+  })
+);
+
+// Step 1: Group all project entries by company name
+const groupedByCompany = entriesWithContent.reduce((acc, entry) => {
+  const companyName = entry.data.company;
+  if (!acc[companyName]) {
+    acc[companyName] = [];
+  }
+  acc[companyName].push(entry);
+  return acc;
+}, {} as GroupedIndustry);
+
+
+// Step 2: Sort the projects WITHIN each company by `date` (newest first)
+for (const companyProjects of Object.values(groupedByCompany)) {
+  companyProjects.sort((a, b) => 
+    b.data.date.valueOf() - a.data.date.valueOf()
+  );
+}
+
+
+// Step 3: Sort the companies themselves by their most recent project `date`
+const sortedCompanies = Object.entries(groupedByCompany).sort(([, projectsA], [, projectsB]) => {
+  // Find the most recent date in each group of projects
+  const maxDateA = Math.max(...projectsA.map(p => p.data.date.valueOf()));
+  const maxDateB = Math.max(...projectsB.map(p => p.data.date.valueOf()));
+
+  // Sort the companies in descending order based on that latest date
+  return maxDateB - maxDateA;
+});
+console.log(sortedCompanies)
+---
+
+<div id="industry">
+  <BackdropText backdropText="Industry" text="Industry" />
+  {
+    sortedCompanies.map(([companyName, projects]) => (
+        <div class="text-3xl font-source text-header border-1 border-header-2 py-3 justify-center flex rounded-lg">
+            {companyName}
+        </div>
+            
+        <div>
+          {projects.map((project) => (
+            <IndustryCard role={project.data.role} project={project.data.project} thumbnailUrl={project.data.thumbnailUrl} content={project} date={project.data.date} />
+          ))}
+
+        </div>
+    ))
+  }
+</div>
