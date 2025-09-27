@@ -23,21 +23,21 @@ import { Icon } from "astro-icon/components";
 ---
 
 <div class="flex space-x-10 p-8">
-  <img src={thumbnailUrl} class="rounded-lg w-2/5 h-full" />
+  <img src={thumbnailUrl} class="h-full w-2/5 rounded-lg" />
 
-  <div class="space-y-3 w-3/5 flex justify-center flex-col">
-    <div class="text-header text-xl font-source">{title}</div>
-    <div class="text-body text-sm italic font-roboto">{authors}</div>
-    <div class="text-body text-md font-roboto">{content}</div>
-    <div class="justify-between flex items-center">
-      <div class="text-5xl text-lime-500 flex space-x-2">
+  <div class="flex w-3/5 flex-col justify-center space-y-3">
+    <div class="text-header font-sora text-2xl font-bold">{title}</div>
+    <div class="text-body font-lexend text-md italic">{authors}</div>
+    <div class="text-body font-lexend text-lg">{content}</div>
+    <div class="flex items-center justify-between">
+      <div class="flex space-x-2 text-5xl text-lime-500">
         <a href={githubUrl} target="_blank"><Icon name="mdi:github" /></a>
         <a href={publicationUrl} target="_blank"
           ><Icon name="mdi:note-text" /></a
         >
       </div>
       <div
-        class="bg-lime-500 text-background font-bold w-max h-max py-1 px-4 font-source rounded-lg"
+        class="text-background font-source h-max w-max rounded-lg bg-lime-500 px-4 py-1 font-bold"
       >
         {date}
       </div>

@@ -15,15 +15,13 @@ const groupedByLab = allResearchEntries.reduce((acc, entry) => {
   acc[labName].push(entry);
   return acc;
 }, {} as GroupedResearch);
-
-console.log(groupedByLab)
 ---
 
 <div id="research">
   <BackdropText backdropText="Research" text="Research" />
   {
     Object.entries(groupedByLab).map(([labName, entries]) => (
-        <div class="text-3xl font-source text-header border-1 border-header-2 py-3 justify-center flex rounded-lg">
+        <div class="text-3xl font-source font-bold text-header border-1 border-header-2 py-3 justify-center flex rounded-lg">
           {labName}
         </div>
 

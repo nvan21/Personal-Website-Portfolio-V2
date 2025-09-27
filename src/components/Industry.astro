@@ -48,17 +48,18 @@ const sortedCompanies = Object.entries(groupedByCompany).sort(([, projectsA], [,
   // Sort the companies in descending order based on that latest date
   return maxDateB - maxDateA;
 });
-console.log(sortedCompanies)
 ---
 
 <div id="industry">
   <BackdropText backdropText="Industry" text="Industry" />
   {
     sortedCompanies.map(([companyName, projects]) => (
-        <div class="text-3xl font-source text-header border-1 border-header-2 py-3 justify-center flex rounded-lg">
-            {companyName}
-        </div>
-            
+      <div class="justify-center flex w-full">
+        <div class="my-4 text-4xl font-sora font-extrabold text-header border-b-1  w-2/3 border-header-2 py-3 justify-center flex">
+                    {companyName}
+                </div>
+      </div>
+                  
         <div>
           {projects.map((project) => (
             <IndustryCard role={project.data.role} project={project.data.project} thumbnailUrl={project.data.thumbnailUrl} content={project} date={project.data.date} />

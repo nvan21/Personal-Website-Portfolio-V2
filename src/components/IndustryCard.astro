@@ -12,26 +12,25 @@ interface Props {
 const { role, date, thumbnailUrl, project, content } = Astro.props;
 
 const { Content, headers } = await content.render();
-console.log(Content);
 ---
 
-<div class="flex space-x-10 mt-8 mx-8">
-  <div class="w-2/5 max-h-[400px]">
+<div class="mx-8 mt-8 flex space-x-10">
+  <div class="max-h-[400px] w-2/5">
     <img
       src={thumbnailUrl}
-      class="rounded-lg object-scale-down m-auto h-full"
+      class="m-auto h-full rounded-lg object-scale-down"
     />
   </div>
 
-  <div class="space-y-3 w-3/5 flex justify-center flex-col">
-    <div class="text-header text-xl font-source">{project}</div>
-    <div class="text-body text-sm italic font-roboto">{role}</div>
-    <div class="text-body text-md prose prose-li:font-roboto">
+  <div class="flex w-3/5 flex-col justify-center">
+    <div class="text-header font-sora text-2xl font-bold">{project}</div>
+    <div class="text-body font-sora text-md mt-2 italic">{role}</div>
+    <div class="text-body prose prose-li:font-lexend prose-ul:pl-4 text-lg">
       <Content />
     </div>
-    <div class="justify-end flex">
+    <div class="flex justify-end">
       <div
-        class="bg-lime-500 text-background font-bold w-max h-max py-1 px-4 font-source rounded-lg"
+        class="text-background font-source h-max w-max rounded-lg bg-lime-500 px-4 py-1 font-bold"
       >
         {
           new Intl.DateTimeFormat("en-US", {
