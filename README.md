@@ -1,43 +1,75 @@
-# Astro Starter Kit: Minimal
+# Personal Website Portfolio V2
 
-```sh
-npm create astro@latest -- --template minimal
-```
+This is the second version of my personal website and portfolio. I created this project to have complete control over how I present myself and my work online, without being constrained by the templates and limitations of traditional portfolio platforms.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+---
 
-## 🚀 Project Structure
+## About The Project
 
-Inside of your Astro project, you'll see the following folders and files:
+This website serves as a central hub for my projects, skills, and experiences. It's a place where I can showcase my work, share my thoughts, and connect with others in the tech community. By building it from scratch, I have the freedom to design and customize every aspect of it to truly reflect my personal brand and style.
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+### Built With
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+This project was built using **Astro**, a modern front-end framework for building fast, content-focused websites. The main technologies used are:
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+* [Astro](https://astro.build/)
+* [TypeScript](https://www.typescriptlang.org/)
+* [Tailwind CSS](https://tailwindcss.com/)
+* [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 
-Any static assets, like images, can be placed in the `public/` directory.
+---
 
-## 🧞 Commands
+## Getting Started
 
-All commands are run from the root of the project, from a terminal:
+To get a local copy up and running, follow these simple steps.
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+### Prerequisites
 
-## 👀 Want to learn more?
+You will need to have [Node.js](https://nodejs.org/en/) and [npm](https://www.npmjs.com/) installed on your machine.
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+### Installation
+
+1.  Clone the repo:
+    ```sh
+    git clone [https://github.com/nvan21/Personal-Website-Portfolio-V2.git](https://github.com/nvan21/Personal-Website-Portfolio-V2.git)
+    ```
+2.  Navigate into the project directory:
+    ```sh
+    cd Personal-Website-Portfolio-V2
+    ```
+3.  Install NPM packages:
+    ```sh
+    npm install
+    ```
+4.  Start the development server:
+    ```sh
+    npm run dev
+    ```
+
+---
+
+## Available Scripts
+
+In the project directory, you can run:
+
+* **`npm run dev`**: Runs the app in development mode. Open [http://localhost:4321](http://localhost:4321) to view it in your browser.
+* **`npm run build`**: Builds the app for production to the `dist/` folder.
+* **`npm run preview`**: Serves the production build locally to preview it before deploying.
+
+---
+
+## Project Structure
+
+* `public/`: Contains static assets like images, fonts, and favicons.
+* `src/`: Contains the source code for the website.
+* `src/pages/`: Contains the pages for the website. Astro uses the file names in this directory to create the routes.
+* `src/components/`: Contains reusable Astro components used across different pages.
+* `src/layouts/`: Contains layout components that define the structure for pages.
+* `src/content/`: Contains content collections for projects, industry experience, etc., managed by Astro's Content Collections API.
+
+---
+
+## Useful Links
+
+* [Astro Documentation](https://docs.astro.build/)
+* [Astro Discord Server](https://astro.build/chat)
