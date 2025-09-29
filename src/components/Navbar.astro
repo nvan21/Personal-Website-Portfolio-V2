@@ -3,26 +3,28 @@ import { Icon } from "astro-icon/components";
 ---
 
 <nav
-  class="border-b-3 border-b-navbar flex justify-between py-5 mb-5 sticky top-0 z-50 bg-background"
+  class="border-b-navbar bg-background sticky top-0 z-50 mb-5 flex w-full justify-center border-b-3 py-5"
 >
-  <div class="items-center space-x-6 font-source text-body text-xl">
-    <a href="#about">About</a>
-    <a href="#research">Research</a>
-    <a href="#industry">Industry</a>
-    <a href="#projects">Projects</a>
-  </div>
-  <div class="items-center space-x-2 text-body text-3xl flex">
-    <a href="https://github.com/nvan21?tab=repositories" target="_blank"
-      ><Icon name={"mdi:github"} /></a
-    >
-    <a href="www.linkedin.com/in/nathan-van-utrecht" target="_blank"
-      ><Icon name={"mdi:linkedin"} /></a
-    >
-    <a href="mailto:nvanutrecht@ucsd.edu" target="_blank"
-      ><Icon name="mdi:email" /></a
-    >
-    <a href="/Nathan_VanUtrecht_CV.pdf" target="_blank"
-      ><Icon name="tabler:file-cv" /></a
-    >
+  <div class="flex w-6xl max-w-6xl justify-between">
+    <div class="font-source text-body items-center space-x-6 text-xl">
+      <a href="#about">About</a>
+      <a href="#research">Research</a>
+      <a href="#industry">Industry</a>
+      <a href="#projects">Projects</a>
+    </div>
+    <div class="text-body flex items-center space-x-2 text-3xl">
+      <a href="https://github.com/nvan21?tab=repositories" target="_blank"
+        ><Icon name={"mdi:github"} /></a
+      >
+      <a href="www.linkedin.com/in/nathan-van-utrecht" target="_blank"
+        ><Icon name={"mdi:linkedin"} /></a
+      >
+      <a href="mailto:nvanutrecht@ucsd.edu" target="_blank"
+        ><Icon name="mdi:email" /></a
+      >
+      <a href="/Nathan_VanUtrecht_CV.pdf" target="_blank"
+        ><Icon name="tabler:file-cv" /></a
+      >
+    </div>
   </div>
 </nav>

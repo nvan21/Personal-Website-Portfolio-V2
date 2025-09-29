@@ -18,7 +18,8 @@ const industryCollection = defineCollection({
         role: z.string(),
         date: z.date(),
         project: z.string(),
-        thumbnailUrl: z.string()
+        thumbnailUrl: z.string(),
+        skills: z.array(z.string())
     })
 })
 

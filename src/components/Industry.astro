@@ -2,70 +2,122 @@
 import { getCollection, type CollectionEntry } from "astro:content";
 
 import BackdropText from "./BackdropText.astro";
-import IndustryCard from "./IndustryCard.astro";
 
 // Fetch all entries from the 'industry' collection
-const allIndustryEntries = await getCollection('industry');
+const allIndustryEntries = await getCollection("industry");
 
-// Define the shape of the object that will hold the grouped entries
-type GroupedIndustry = Record<string, CollectionEntry<'industry'>[]>;
-
+// Pre-render the content for each entry to make it available in the template
 const entriesWithContent = await Promise.all(
   allIndustryEntries.map(async (entry) => {
     const { Content } = await entry.render();
     return {
-      ...entry, // Keep all original entry properties (id, slug, data, etc.)
-      Content,   // Add the rendered Content component
+      ...entry, // Keep all original entry properties
+      Content, // Add the rendered Content component
     };
-  })
+  }),
 );
 
-// Step 1: Group all project entries by company name
-const groupedByCompany = entriesWithContent.reduce((acc, entry) => {
-  const companyName = entry.data.company;
-  if (!acc[companyName]) {
-    acc[companyName] = [];
-  }
-  acc[companyName].push(entry);
-  return acc;
-}, {} as GroupedIndustry);
+// Create one flat array of all projects, sorted chronologically (newest first)
+const allProjectsSorted = entriesWithContent.sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
 
+// Define a single set of color classes for each company
+const companyColors: Record<string, string> = {
+  "John Deere": "bg-green-900/60 border-green-800",
+  "Grace Technologies": "bg-red-900/70 border-red-800",
+  // Add more companies here
+  "Default Company": "bg-gray-900/60 border-gray-800",
+};
 
-// Step 2: Sort the projects WITHIN each company by `date` (newest first)
-for (const companyProjects of Object.values(groupedByCompany)) {
-  companyProjects.sort((a, b) => 
-    b.data.date.valueOf() - a.data.date.valueOf()
-  );
-}
-
-
-// Step 3: Sort the companies themselves by their most recent project `date`
-const sortedCompanies = Object.entries(groupedByCompany).sort(([, projectsA], [, projectsB]) => {
-  // Find the most recent date in each group of projects
-  const maxDateA = Math.max(...projectsA.map(p => p.data.date.valueOf()));
-  const maxDateB = Math.max(...projectsB.map(p => p.data.date.valueOf()));
-
-  // Sort the companies in descending order based on that latest date
-  return maxDateB - maxDateA;
-});
+// Updated function to get the color class string for a given company
+const getCompanyCardColors = (companyName: string) => {
+  return companyColors[companyName] || companyColors["Default Company"];
+};
 ---
 
 <div id="industry">
   <BackdropText backdropText="Industry" text="Industry" />
-  {
-    sortedCompanies.map(([companyName, projects]) => (
-      <div class="justify-center flex w-full">
-        <div class="my-4 text-4xl font-sora font-extrabold text-header border-b-1  w-2/3 border-header-2 py-3 justify-center flex">
-                    {companyName}
-                </div>
-      </div>
-                  
-        <div>
-          {projects.map((project) => (
-            <IndustryCard role={project.data.role} project={project.data.project} thumbnailUrl={project.data.thumbnailUrl} content={project} date={project.data.date} />
-          ))}
 
-        </div>
-    ))
-  }
+  {/* Single Flexbox Timeline Container */}
+  <div class="flex flex-col">
+    {
+      allProjectsSorted.map((project, index) => {
+        const prevProject = allProjectsSorted[index - 1];
+        const showCompanyHeader =
+          index === 0 || prevProject.data.company !== project.data.company;
+
+        const { Content } = project;
+        const cardClasses = getCompanyCardColors(project.data.company);
+
+        return (
+          // Each timeline item is a flex row
+          <div class="flex flex-row">
+            {/* Gutter */}
+            <div class="relative mr-6 w-12 flex-shrink-0">
+              {/* Vertical Line */}
+              <div class="bg-body/30 absolute top-0 left-1/2 h-full w-0.5 -translate-x-1/2" />
+
+              {/* Circle */}
+              <div class="bg-header ring-body absolute top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full ring-8">
+                <img
+                  class="rounded-full shadow-lg"
+                  src={project.data.thumbnailUrl}
+                  alt={`${project.data.project} thumbnail`}
+                />
+              </div>
+
+              {/* Horizontal Connector Line */}
+              <div class="bg-body/30 absolute top-1/2 left-full h-0.5 w-6 -translate-y-1/2" />
+            </div>
+
+            {/* Content Column */}
+            <div class="w-full pb-10">
+              {showCompanyHeader && (
+                <div class="font-source text-header my-4 flex justify-start text-4xl font-bold">
+                  {project.data.company}
+                </div>
+              )}
+
+              {/* Content Card */}
+              <div
+                class:list={[
+                  "items-center rounded-lg border p-4 shadow-xs sm:flex",
+                  cardClasses,
+                ]}
+              >
+                <div class="flex flex-col">
+                  <p class="text-header font-source mb-1 text-2xl font-bold">
+                    {project.data.project}
+                  </p>
+                  <p class="text-body font-lexend text-sm italic">
+                    {project.data.role}
+                  </p>
+                  <div class="text-body prose prose-li:font-lexend text-md mb-3 max-w-none min-w-0 flex-grow">
+                    <Content />
+                  </div>
+                  <div class="flex flex-row justify-between">
+                    <div class="flex flex-row">
+                      {project.data.skills.map((skill) => (
+                        <div class="mr-2 mb-1 flex-shrink-0 rounded-lg bg-slate-700 px-3 py-1 text-sm font-bold text-slate-200 sm:order-last sm:mb-0">
+                          {skill}
+                        </div>
+                      ))}
+                    </div>
+
+                    <time class="mb-1 flex-shrink-0 rounded-lg bg-slate-700 px-3 py-1 text-sm font-bold text-slate-200 sm:order-last sm:mb-0">
+                      {new Intl.DateTimeFormat("en-US", {
+                        month: "long",
+                        year: "numeric",
+                      }).format(project.data.date)}
+                    </time>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })
+    }
+  </div>
 </div>

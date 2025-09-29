@@ -1,4 +1,5 @@
 ---
+import Navbar from "../components/Navbar.astro";
 import "../styles/global.css";
 ---
 
@@ -18,7 +19,10 @@ import "../styles/global.css";
     <meta name="generator" content={Astro.generator} />
     <title>Nathan Van Utrecht</title>
   </head>
-  <body class="bg-background flex min-h-screen justify-center">
+  <body
+    class="bg-background flex min-h-screen flex-col items-center justify-center"
+  >
+    <Navbar />
     <div class="w-full max-w-6xl">
       <slot />
     </div>

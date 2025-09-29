@@ -4,6 +4,9 @@ role: Product Engineer
 project: Tractor Cab Redesign
 date: 2023-08-02
 thumbnailUrl: john_deere_tractor.png
+skills: 
+- Project Management
+- CREO Parametric
 ---
 
 - Spearheaded market and homologation research to establish baseline design requirements for next-generation
