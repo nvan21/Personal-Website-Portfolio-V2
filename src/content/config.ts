@@ -23,7 +23,20 @@ const industryCollection = defineCollection({
     })
 })
 
+const projectsCollection = defineCollection({
+  type: "content", // Each project will be a markdown file
+  schema: z.object({
+    title: z.string(),
+    pitch: z.string(), // The one-sentence summary
+    image: z.string(), // Path to the main project image
+    skills: z.array(z.string()), // A list of technologies used
+    githubUrl: z.string().url().optional(), // Optional link to the GitHub repo
+    publishDate: z.date(),
+  }),
+});
+
 export const collections = {
   'research': researchCollection,
-  'industry': industryCollection
+  'industry': industryCollection,
+  'projects': projectsCollection
 };

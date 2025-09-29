@@ -1,0 +1,53 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../layouts/Layout.astro";
+
+// Generate a page for each project in the collection
+export async function getStaticPaths() {
+  const allProjects = await getCollection("projects");
+  return allProjects.map((project) => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await project.render();
+---
+
+<Layout title={project.data.title}>
+  <article>
+    <!-- Hero Section -->
+    <div class="text-center">
+      <h1 class="text-4xl font-bold text-slate-100">{project.data.title}</h1>
+      <p class="mx-auto mt-4 max-w-2xl text-lg text-slate-400">
+        {project.data.pitch}
+      </p>
+    </div>
+
+    <!-- Live Demo & Repo Links -->
+    <div class="mt-8 flex justify-center gap-4">
+      {
+        project.data.githubUrl && (
+          <a
+            href={project.data.githubUrl}
+            class="rounded-lg bg-slate-700 px-4 py-2 font-semibold text-white hover:bg-slate-600"
+          >
+            View Source Code
+          </a>
+        )
+      }
+    </div>
+
+    <img
+      src={project.data.image}
+      alt=""
+      class="mt-12 aspect-video w-full rounded-lg object-cover shadow-lg"
+    />
+
+    <!-- The Case Study Content -->
+    <div class="prose prose-invert prose-lg mx-auto mt-12">
+      <Content />
+    </div>
+  </article>
+</Layout>
