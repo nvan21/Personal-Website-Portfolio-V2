@@ -9,5 +9,5 @@ skills:
 - PyTorch
 - Scientific Computing
 githubUrl: "https://github.com/nvan21/KAN-Koopman"
-publishDate: 2024-12-17
+publishDate: 2025-12-10
 ---

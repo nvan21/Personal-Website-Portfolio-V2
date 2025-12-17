@@ -1,7 +1,7 @@
 ---
 title: "Traffic Sign Classification" 
 pitch: "An in-depth comparison of five machine learning models to identify the most effective for real-time traffic sign recognition under occlusion, revealing that a custom CNN provides the best balance of speed and accuracy."
-image: "traffic_sign_classification.png" 
+image: "traffic_sign_classification_thumbnail.png" 
 skills:
 - Vision Transformers
 - Convolutional Neural Networks
