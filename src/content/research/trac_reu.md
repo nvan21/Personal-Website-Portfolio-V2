@@ -2,6 +2,7 @@
 title: 'Investigating Model-Free vs Model-Based RL for Sim-to-Real Transfer'
 authors: 'Nathan Van Utrecht, Dr. Cody Fleming'
 lab: 'Translational Artificial Intelligence Center'
+school: 'Iowa State University'
 date: 'Aug 2024'
 thumbnailUrl: './trac_logo.jpg'
 githubUrl: 'https://github.com/nvan21/TrAC-REU'

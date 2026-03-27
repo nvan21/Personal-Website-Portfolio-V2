@@ -4,7 +4,13 @@ import { getCollection, type CollectionEntry } from "astro:content";
 import BackdropText from "./BackdropText.astro";
 import ResearchCard from "./ResearchCard.astro";
 
-const allResearchEntries = await getCollection("research");
+const allResearchEntries = (await getCollection("research")).sort((a, b) => {
+  const aPresent = a.data.date.includes("Present");
+  const bPresent = b.data.date.includes("Present");
+  if (aPresent && !bPresent) return -1;
+  if (!aPresent && bPresent) return 1;
+  return 0;
+});
 
 type GroupedResearch = Record<string, CollectionEntry<"research">[]>;
 const groupedByLab = allResearchEntries.reduce((acc, entry) => {
@@ -27,7 +33,7 @@ const groupedByLab = allResearchEntries.reduce((acc, entry) => {
 
         <div class="projects-list space-y-4 mb-10">
           {entries.map((entry) => (
-            <ResearchCard title={entry.data.title} authors={entry.data.authors} content = {entry.body} date = {entry.data.date} thumbnailUrl={entry.data.thumbnailUrl} githubUrl={entry.data.githubUrl} publicationUrl={entry.data.publicationUrl}/>
+            <ResearchCard title={entry.data.title} authors={entry.data.authors} content={entry.body} date={entry.data.date} thumbnailUrl={entry.data.thumbnailUrl} githubUrl={entry.data.githubUrl} publicationUrl={entry.data.publicationUrl} lab={entry.data.lab} school={entry.data.school} />
           ))}
         </div>
     ))

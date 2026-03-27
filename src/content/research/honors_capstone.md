@@ -2,6 +2,7 @@
 title: 'From Demonstrations to Adaptations: Assessing Imitation Learning Robustness and Learned Reward Transferability'
 authors: 'Nathan Van Utrecht, Dr. Cody Fleming'
 lab: 'Coordinated Systems Lab'
+school: 'Iowa State University'
 date: 'May 2025'
 thumbnailUrl: './irl_research.png'
 githubUrl: 'https://github.com/nvan21/Honors-Capstone-IL-Robustness'

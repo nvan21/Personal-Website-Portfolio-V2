@@ -5,10 +5,11 @@ const researchCollection = defineCollection({
     title: z.string(),
     authors: z.string(),
     lab: z.string(),
+    school: z.string(),
     date: z.string(),
-    thumbnailUrl: z.string(),
-    publicationUrl: z.string(),
-    githubUrl: z.string(),
+    thumbnailUrl: z.string().optional(),
+    publicationUrl: z.string().optional(),
+    githubUrl: z.string().optional(),
   }),
 });
 
