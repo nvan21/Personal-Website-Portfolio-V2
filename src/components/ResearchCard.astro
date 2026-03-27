@@ -22,30 +22,30 @@ const {
 import { Icon } from "astro-icon/components";
 ---
 
-<div class="flex space-x-10 p-8">
-  <img src={thumbnailUrl} class="h-full w-2/5 rounded-lg" />
+<div class="rounded-xl border border-body/25 bg-navbar p-6">
+  <div class="flex space-x-8">
+    <img src={thumbnailUrl} class="h-full w-2/5 rounded-lg" />
 
-  <div class="flex w-3/5 flex-col justify-center space-y-3">
-    <div class="text-header font-sora text-2xl font-bold">{title}</div>
-    <div class="text-body font-lexend text-md italic">{authors}</div>
-    <div class="text-body font-lexend text-lg">{content}</div>
-    <div class="flex items-center justify-between">
-      <div class="flex space-x-2 text-5xl text-slate-200">
-        <a
-          href={githubUrl}
-          target="_blank"
-          class="rounded-lg bg-slate-700 p-0.5"><Icon name="mdi:github" /></a
-        >
-        <a
-          href={publicationUrl}
-          target="_blank"
-          class="rounded-lg bg-slate-700 p-0.5"><Icon name="mdi:note-text" /></a
-        >
-      </div>
-      <div
-        class="font-source h-max w-max rounded-lg bg-slate-700 px-4 py-1 font-bold text-slate-200"
-      >
-        {date}
+    <div class="flex w-3/5 flex-col justify-center space-y-3">
+      <div class="text-header font-source text-2xl font-semibold tracking-tight">{title}</div>
+      <div class="text-body font-lexend text-sm italic">{authors}</div>
+      <div class="text-body font-lexend text-base leading-relaxed">{content}</div>
+      <div class="flex items-center justify-between pt-1">
+        <div class="flex space-x-2">
+          <a
+            href={githubUrl}
+            target="_blank"
+            class="rounded-md border border-body/25 bg-navbar p-1.5 text-body transition-colors hover:border-body/50 hover:text-header"
+          ><Icon name="mdi:github" class="h-5 w-5" /></a>
+          <a
+            href={publicationUrl}
+            target="_blank"
+            class="rounded-md border border-body/25 bg-navbar p-1.5 text-body transition-colors hover:border-body/50 hover:text-header"
+          ><Icon name="mdi:note-text" class="h-5 w-5" /></a>
+        </div>
+        <time class="font-lexend text-body/60 text-xs tracking-wide">
+          {date}
+        </time>
       </div>
     </div>
   </div>

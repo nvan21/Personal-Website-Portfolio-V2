@@ -8,10 +8,10 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #1b1b1b;
-  --color-header: #f1f1f1;
-  --color-body: #b6b2af;
-  --color-navbar: #252525;
+  --color-background: #1e1d1b;
+  --color-header: #edeae5;
+  --color-body: #cbc6bf;
+  --color-navbar: #2b2927;
   --font-inter: "Inter", sans-serif;
   --font-manrope: "Manrope", sans-serif;
   --font-roboto: "Roboto", sans-serif;
