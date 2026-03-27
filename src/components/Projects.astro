@@ -14,7 +14,7 @@ const sortedProjects = allProjects.sort(
   <BackdropText backdropText="Projects" text="Projects" />
 
   <!-- Responsive Project Grid -->
-  <div class="mb-12 grid grid-cols-1 gap-8 md:grid-cols-2">
+  <div class="mb-12 grid grid-cols-1 gap-6 md:grid-cols-2 md:auto-rows-fr">
     {sortedProjects.map((project) => <ProjectCard {project} />)}
   </div>
 </div>

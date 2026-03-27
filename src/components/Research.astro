@@ -21,11 +21,11 @@ const groupedByLab = allResearchEntries.reduce((acc, entry) => {
   <BackdropText backdropText="Research" text="Research" />
   {
     Object.entries(groupedByLab).map(([labName, entries]) => (
-        <div class="text-3xl font-source font-bold text-header border-1 border-header-2 py-3 justify-center flex rounded-lg">
+        <div class="font-lexend text-header my-4 flex justify-start text-3xl font-bold">
           {labName}
         </div>
 
-        <div class="projects-list space-y-8">
+        <div class="projects-list space-y-4 mb-10">
           {entries.map((entry) => (
             <ResearchCard title={entry.data.title} authors={entry.data.authors} content = {entry.body} date = {entry.data.date} thumbnailUrl={entry.data.thumbnailUrl} githubUrl={entry.data.githubUrl} publicationUrl={entry.data.publicationUrl}/>
           ))}
