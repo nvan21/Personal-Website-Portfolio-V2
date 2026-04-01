@@ -3,16 +3,18 @@ import { Icon } from "astro-icon/components";
 ---
 
 <nav
-  class="border-b-navbar bg-background sticky top-0 z-50 mb-5 flex w-full justify-center border-b-3 py-5"
+  class="border-b-navbar bg-background sticky top-0 z-50 mb-5 flex w-full flex-col items-center border-b-3"
 >
-  <div class="flex w-6xl max-w-6xl justify-between">
-    <div class="font-source text-body items-center space-x-6 text-xl">
+  <div class="flex w-full max-w-6xl items-center justify-between px-4 py-5 md:px-6 lg:px-0">
+    <!-- Desktop nav links -->
+    <div class="font-source text-body hidden items-center space-x-6 text-xl md:flex">
       <a href="#about">About</a>
       <a href="#research">Research</a>
       <a href="#industry">Industry</a>
       <a href="#projects">Projects</a>
     </div>
-    <div class="text-body flex items-center space-x-2 text-3xl">
+    <!-- Desktop social icons -->
+    <div class="text-body hidden items-center space-x-2 text-3xl md:flex">
       <a href="https://github.com/nvan21?tab=repositories" target="_blank"
         ><Icon name={"mdi:github"} /></a
       >
@@ -26,5 +28,60 @@ import { Icon } from "astro-icon/components";
         ><Icon name="tabler:file-cv" /></a
       >
     </div>
+    <!-- Mobile: name/brand on left, hamburger on right -->
+    <span class="font-source text-header text-lg font-semibold md:hidden"
+      >Nathan Van Utrecht</span
+    >
+    <button
+      id="mobile-menu-btn"
+      class="text-body text-3xl md:hidden"
+      aria-label="Toggle menu"
+    >
+      <Icon name="mdi:menu" id="menu-icon" />
+    </button>
+  </div>
+
+  <!-- Mobile dropdown -->
+  <div
+    id="mobile-menu"
+    class="hidden w-full border-t border-body/20 md:hidden"
+  >
+    <div class="flex flex-col px-4 py-4">
+      <div class="font-source text-body flex flex-col space-y-4 text-xl">
+        <a href="#about" class="mobile-nav-link">About</a>
+        <a href="#research" class="mobile-nav-link">Research</a>
+        <a href="#industry" class="mobile-nav-link">Industry</a>
+        <a href="#projects" class="mobile-nav-link">Projects</a>
+      </div>
+      <div class="text-body mt-6 flex space-x-4 text-3xl">
+        <a href="https://github.com/nvan21?tab=repositories" target="_blank" class="mobile-nav-link"
+          ><Icon name={"mdi:github"} /></a
+        >
+        <a href="www.linkedin.com/in/nathan-van-utrecht" target="_blank" class="mobile-nav-link"
+          ><Icon name={"mdi:linkedin"} /></a
+        >
+        <a href="mailto:nvanutrecht@ucsd.edu" target="_blank" class="mobile-nav-link"
+          ><Icon name="mdi:email" /></a
+        >
+        <a href="/Nathan_VanUtrecht_CV.pdf" target="_blank" class="mobile-nav-link"
+          ><Icon name="tabler:file-cv" /></a
+        >
+      </div>
+    </div>
   </div>
 </nav>
+
+<script>
+  const btn = document.getElementById("mobile-menu-btn");
+  const menu = document.getElementById("mobile-menu");
+
+  btn?.addEventListener("click", () => {
+    menu?.classList.toggle("hidden");
+  });
+
+  document.querySelectorAll(".mobile-nav-link").forEach((link) => {
+    link.addEventListener("click", () => {
+      menu?.classList.add("hidden");
+    });
+  });
+</script>

@@ -41,12 +41,12 @@ const allProjectsSorted = entriesWithContent.sort(
           // Each timeline item is a flex row
           <div class="flex flex-row">
             {/* Gutter */}
-            <div class="relative mr-6 w-12 flex-shrink-0">
+            <div class="relative mr-4 w-8 flex-shrink-0 md:mr-6 md:w-12">
               {/* Vertical Line */}
               <div class="bg-body/20 absolute top-0 left-1/2 h-full w-px -translate-x-1/2" />
 
               {/* Circle */}
-              <div class="bg-white ring-background absolute top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-body/20 ring-4 shadow-sm">
+              <div class="bg-white ring-background absolute top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-body/20 ring-4 shadow-sm md:h-12 md:w-12">
                 <img
                   class="rounded-full"
                   src={project.data.thumbnailUrl}
