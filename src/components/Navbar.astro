@@ -1,87 +1,127 @@
 ---
 import { Icon } from "astro-icon/components";
+import { links } from "../data/portfolio";
+const navLinks = ["Work", "Experience", "Contact"];
 ---
 
-<nav
-  class="border-b-navbar bg-background sticky top-0 z-50 mb-5 flex w-full flex-col items-center border-b-3"
->
-  <div class="flex w-full max-w-6xl items-center justify-between px-4 py-5 md:px-6 lg:px-0">
-    <!-- Desktop nav links -->
-    <div class="font-source text-body hidden items-center space-x-6 text-xl md:flex">
-      <a href="#about">About</a>
-      <a href="#research">Research</a>
-      <a href="#industry">Industry</a>
-      <a href="#projects">Projects</a>
+<header class="site-header">
+  <nav class="site-shell nav-row" aria-label="Primary navigation">
+    <a class="brand" href="#top"><span>NVU</span> Nathan Van Utrecht</a>
+    <div class="desktop-nav">
+      {navLinks.map((label) => <a href={`#${label.toLowerCase()}`}>{label}</a>)}
     </div>
-    <!-- Desktop social icons -->
-    <div class="text-body hidden items-center space-x-2 text-3xl md:flex">
-      <a href="https://github.com/nvan21?tab=repositories" target="_blank"
-        ><Icon name={"mdi:github"} /></a
+    <div class="nav-actions">
+      <a
+        class="icon-button desktop-action"
+        href={links.github}
+        target="_blank"
+        rel="noreferrer"
+        aria-label="GitHub"
       >
-      <a href="www.linkedin.com/in/nathan-van-utrecht" target="_blank"
-        ><Icon name={"mdi:linkedin"} /></a
+        <Icon name="tabler:brand-github" aria-hidden="true" />
+      </a>
+      <a
+        class="icon-button desktop-action"
+        href={links.linkedin}
+        target="_blank"
+        rel="noreferrer"
+        aria-label="LinkedIn"
       >
-      <a href="mailto:nvanutrecht@ucsd.edu" target="_blank"
-        ><Icon name="mdi:email" /></a
+        <Icon name="tabler:brand-linkedin" aria-hidden="true" />
+      </a>
+      <button
+        class="icon-button"
+        id="theme-button"
+        aria-label="Color theme: System"
+        title="Color theme: System"
       >
-      <a href="/Nathan_VanUtrecht_CV.pdf" target="_blank"
-        ><Icon name="tabler:file-cv" /></a
+        <Icon name="tabler:sun-moon" aria-hidden="true" />
+      </button>
+      <a class="nav-cv" href={links.cv} target="_blank" rel="noreferrer">
+        CV <Icon name="tabler:arrow-up-right" aria-hidden="true" />
+      </a>
+      <button
+        class="icon-button menu-button"
+        id="menu-button"
+        aria-controls="mobile-menu"
+        aria-expanded="false"
+        aria-label="Open navigation menu"
       >
+        <Icon name="tabler:menu-2" aria-hidden="true" />
+      </button>
     </div>
-    <!-- Mobile: name/brand on left, hamburger on right -->
-    <span class="font-source text-header text-lg font-semibold md:hidden"
-      >Nathan Van Utrecht</span
-    >
-    <button
-      id="mobile-menu-btn"
-      class="text-body text-3xl md:hidden"
-      aria-label="Toggle menu"
-    >
-      <Icon name="mdi:menu" id="menu-icon" />
-    </button>
-  </div>
-
-  <!-- Mobile dropdown -->
-  <div
-    id="mobile-menu"
-    class="hidden w-full border-t border-body/20 md:hidden"
-  >
-    <div class="flex flex-col px-4 py-4">
-      <div class="font-source text-body flex flex-col space-y-4 text-xl">
-        <a href="#about" class="mobile-nav-link">About</a>
-        <a href="#research" class="mobile-nav-link">Research</a>
-        <a href="#industry" class="mobile-nav-link">Industry</a>
-        <a href="#projects" class="mobile-nav-link">Projects</a>
-      </div>
-      <div class="text-body mt-6 flex space-x-4 text-3xl">
-        <a href="https://github.com/nvan21?tab=repositories" target="_blank" class="mobile-nav-link"
-          ><Icon name={"mdi:github"} /></a
-        >
-        <a href="www.linkedin.com/in/nathan-van-utrecht" target="_blank" class="mobile-nav-link"
-          ><Icon name={"mdi:linkedin"} /></a
-        >
-        <a href="mailto:nvanutrecht@ucsd.edu" target="_blank" class="mobile-nav-link"
-          ><Icon name="mdi:email" /></a
-        >
-        <a href="/Nathan_VanUtrecht_CV.pdf" target="_blank" class="mobile-nav-link"
-          ><Icon name="tabler:file-cv" /></a
-        >
-      </div>
+  </nav>
+  <div class="mobile-menu" id="mobile-menu" hidden>
+    <div class="site-shell mobile-menu-inner">
+      {navLinks.map((label) => <a href={`#${label.toLowerCase()}`}>{label}</a>)}
+      <a href={links.github} target="_blank" rel="noreferrer">GitHub</a>
+      <a href={links.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
+      <a href={`mailto:${links.email}`}>Email</a>
     </div>
   </div>
-</nav>
+</header>
 
 <script>
-  const btn = document.getElementById("mobile-menu-btn");
-  const menu = document.getElementById("mobile-menu");
-
-  btn?.addEventListener("click", () => {
-    menu?.classList.toggle("hidden");
+  const button = document.querySelector<HTMLButtonElement>("#menu-button");
+  const menu = document.querySelector<HTMLElement>("#mobile-menu");
+  const closeMenu = () => {
+    if (!button || !menu) return;
+    button.setAttribute("aria-expanded", "false");
+    button.setAttribute("aria-label", "Open navigation menu");
+    menu.hidden = true;
+  };
+  button?.addEventListener("click", () => {
+    if (!menu) return;
+    const willOpen = button.getAttribute("aria-expanded") !== "true";
+    button.setAttribute("aria-expanded", String(willOpen));
+    button.setAttribute(
+      "aria-label",
+      willOpen ? "Close navigation menu" : "Open navigation menu",
+    );
+    menu.hidden = !willOpen;
   });
-
-  document.querySelectorAll(".mobile-nav-link").forEach((link) => {
-    link.addEventListener("click", () => {
-      menu?.classList.add("hidden");
+  menu
+    ?.querySelectorAll("a")
+    .forEach((link) => link.addEventListener("click", closeMenu));
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && menu && !menu.hidden) {
+      closeMenu();
+      button?.focus();
+    }
+  });
+  document.addEventListener("click", (event) => {
+    if (
+      event.target instanceof Node &&
+      !document.querySelector(".site-header")?.contains(event.target)
+    )
+      closeMenu();
+  });
+  window
+    .matchMedia("(min-width: 768px)")
+    .addEventListener("change", (event) => {
+      if (event.matches) closeMenu();
     });
+
+  const themeButton =
+    document.querySelector<HTMLButtonElement>("#theme-button");
+  const themes = ["system", "light", "dark"];
+  const updateThemeLabel = () => {
+    const theme = document.documentElement.dataset.theme || "system";
+    const label = `Color theme: ${theme[0].toUpperCase()}${theme.slice(1)}`;
+    themeButton?.setAttribute("aria-label", label);
+    themeButton?.setAttribute("title", `${label}. Click to change.`);
+  };
+  updateThemeLabel();
+  themeButton?.addEventListener("click", () => {
+    const current = document.documentElement.dataset.theme || "system";
+    const next = themes[(themes.indexOf(current) + 1) % themes.length];
+    if (next === "system") delete document.documentElement.dataset.theme;
+    else document.documentElement.dataset.theme = next;
+    try {
+      localStorage.setItem("portfolio-theme", next);
+    } catch {
+      /* System preference still works without storage. */
+    }
+    updateThemeLabel();
   });
 </script>

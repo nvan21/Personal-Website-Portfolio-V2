@@ -1,7 +1,7 @@
 ---
 title: "Visual-Inertial Simultaneous Localization and Mapping (VI-SLAM)"
 pitch: "A complete SLAM pipeline utilizing an Extended Kalman Filter (EKF) to fuse high-frequency IMU kinematics with stereo visual features for robust 3D trajectory estimation and landmark mapping."
-image: "slam_trajectory_thumbnail.png"
+image: "slam_trajectory_thumbnail.webp"
 skills:
 - Robotics
 - State Estimation

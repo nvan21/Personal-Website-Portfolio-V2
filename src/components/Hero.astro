@@ -1,0 +1,633 @@
+---
+import { Icon } from "astro-icon/components";
+import { links } from "../data/portfolio";
+---
+
+<section id="top" class="hero" aria-labelledby="hero-title">
+  <div class="site-shell">
+    <div class="sheet-frame" data-sim>
+      <canvas class="sim-canvas" aria-hidden="true"></canvas>
+
+      <div class="hero-content">
+        <p class="hero-label" data-obstacle>Robotics MS · UC San Diego</p>
+        <h1 id="hero-title">
+          <span data-obstacle>Nathan</span>
+          <span data-obstacle>Van</span>
+          <span data-obstacle>Utrecht</span>
+        </h1>
+        <div class="hero-body">
+          <div class="hero-intro">
+            <p data-obstacle>
+              I work on state estimation, robot learning, and control. Right now
+              I'm in Xiaolong Wang's lab, teaching simulators to behave more
+              like the real robots they stand in for.
+            </p>
+            <p class="hero-prev" data-obstacle>
+              Before this: internships at Brain Corp, John Deere, and Grace
+              Technologies, and two research positions at Iowa State.
+            </p>
+            <nav class="hero-links" aria-label="Profiles" data-obstacle>
+              <a href={links.cv} target="_blank" rel="noreferrer"
+                >CV <Icon name="tabler:arrow-up-right" aria-hidden="true" /></a
+              >
+              <a href={links.github} target="_blank" rel="noreferrer"
+                >GitHub <Icon
+                  name="tabler:arrow-up-right"
+                  aria-hidden="true"
+                /></a
+              >
+              <a href={links.linkedin} target="_blank" rel="noreferrer"
+                >LinkedIn <Icon
+                  name="tabler:arrow-up-right"
+                  aria-hidden="true"
+                /></a
+              >
+              <a href={`mailto:${links.email}`}
+                >Email <Icon
+                  name="tabler:arrow-up-right"
+                  aria-hidden="true"
+                /></a
+              >
+            </nav>
+          </div>
+          <figure class="hero-portrait" data-obstacle>
+            <img
+              src="/images/headshot.webp"
+              width="640"
+              height="640"
+              alt="Nathan Van Utrecht"
+              fetchpriority="high"
+            />
+          </figure>
+        </div>
+      </div>
+
+      <p class="sim-readout" data-obstacle>
+        <span class="sim-dot" aria-hidden="true"></span>
+        <span
+          >Live: frontier exploration, A* planning, 2D lidar. Click to set a
+          goal.</span
+        >
+        <span class="sim-stats" data-readout aria-hidden="true"></span>
+      </p>
+    </div>
+  </div>
+</section>
+
+<script>
+  // A differential-drive robot explores the hero with a simulated 2D lidar,
+  // building an occupancy grid and replanning with A* toward frontiers.
+  const frame = document.querySelector<HTMLElement>("[data-sim]");
+  const canvas = frame?.querySelector<HTMLCanvasElement>("canvas");
+  const readout = frame?.querySelector<HTMLElement>("[data-readout]");
+
+  if (frame && canvas) {
+    const CELL = 10;
+    const RANGE = 240;
+    const SPEED = 70;
+    const UNKNOWN = 0,
+      FREE = 1,
+      OCC = 2;
+    const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const ctx = canvas.getContext("2d")!;
+    const map = document.createElement("canvas");
+    const mapCtx = map.getContext("2d")!;
+
+    let w = 0,
+      h = 0,
+      cols = 0,
+      rows = 0,
+      dpr = 1;
+    let truth = new Uint8Array(0);
+    let belief = new Uint8Array(0);
+    let known = 0,
+      open = 0;
+    let colors = { accent: "", ink: "", free: "", page: "" };
+
+    const robot = { x: 0, y: 0, th: 0 };
+    let path: [number, number][] = [];
+    let pathIdx = 0;
+    let goal: [number, number] | null = null;
+    let userGoal = false;
+    let hits: [number, number][] = [];
+    let trail: [number, number][] = [];
+    let replanIn = 0;
+    let doneFor = 0;
+    let skip = new Set<number>();
+
+    const idx = (c: number, r: number) => r * cols + c;
+    const cellOf = (x: number, y: number) =>
+      idx(Math.floor(x / CELL), Math.floor(y / CELL));
+    const inside = (x: number, y: number) => x >= 0 && y >= 0 && x < w && y < h;
+    const center = (i: number): [number, number] => [
+      (i % cols) * CELL + CELL / 2,
+      Math.floor(i / cols) * CELL + CELL / 2,
+    ];
+
+    const readColors = () => {
+      const s = getComputedStyle(document.documentElement);
+      colors = {
+        accent: s.getPropertyValue("--accent").trim(),
+        ink: s.getPropertyValue("--text").trim(),
+        free: s.getPropertyValue("--surface").trim(),
+        page: s.getPropertyValue("--page").trim(),
+      };
+    };
+
+    const paintCell = (i: number) => {
+      const x = (i % cols) * CELL,
+        y = Math.floor(i / cols) * CELL;
+      mapCtx.clearRect(x, y, CELL, CELL);
+      if (belief[i] === FREE) {
+        mapCtx.fillStyle = colors.free;
+        mapCtx.fillRect(x, y, CELL, CELL);
+      } else if (belief[i] === OCC) {
+        mapCtx.fillStyle = colors.ink;
+        mapCtx.globalAlpha = 0.55;
+        mapCtx.fillRect(x + 2, y + 2, CELL - 4, CELL - 4);
+        mapCtx.globalAlpha = 1;
+      }
+    };
+    const repaintMap = () => {
+      mapCtx.clearRect(0, 0, w, h);
+      for (let i = 0; i < belief.length; i++) if (belief[i]) paintCell(i);
+    };
+    const setBelief = (i: number, v: number) => {
+      if (belief[i] === v || belief[i] === OCC) return;
+      if (belief[i] === UNKNOWN && v === FREE) known++;
+      belief[i] = v;
+      paintCell(i);
+    };
+
+    const build = () => {
+      // Size from the frame, never the canvas itself, so a canvas that falls
+      // back into normal flow can't grow the frame in a resize loop.
+      w = Math.min(2400, frame.clientWidth);
+      h = Math.min(1400, frame.clientHeight);
+      if (w <= 0 || h <= 0) return;
+      canvas.style.width = `${w}px`;
+      canvas.style.height = `${h}px`;
+      const box = canvas.getBoundingClientRect();
+      dpr = Math.min(devicePixelRatio || 1, 2);
+      for (const c of [canvas, map]) {
+        c.width = w * dpr;
+        c.height = h * dpr;
+      }
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      mapCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      cols = Math.ceil(w / CELL);
+      rows = Math.ceil(h / CELL);
+      truth = new Uint8Array(cols * rows);
+      belief = new Uint8Array(cols * rows);
+      for (let c = 0; c < cols; c++) {
+        truth[idx(c, 0)] = truth[idx(c, rows - 1)] = 1;
+      }
+      for (let r = 0; r < rows; r++) {
+        truth[idx(0, r)] = truth[idx(cols - 1, r)] = 1;
+      }
+      frame.querySelectorAll<HTMLElement>("[data-obstacle]").forEach((el) => {
+        for (const r of el.getClientRects()) {
+          const c0 = Math.max(0, Math.floor((r.left - box.left - CELL) / CELL));
+          const c1 = Math.min(
+            cols - 1,
+            Math.floor((r.right - box.left + CELL) / CELL),
+          );
+          const r0 = Math.max(0, Math.floor((r.top - box.top - CELL) / CELL));
+          const r1 = Math.min(
+            rows - 1,
+            Math.floor((r.bottom - box.top + CELL) / CELL),
+          );
+          for (let y = r0; y <= r1; y++)
+            for (let x = c0; x <= c1; x++) truth[idx(x, y)] = 1;
+        }
+      });
+      open = truth.reduce((n, v) => n + (v ? 0 : 1), 0);
+      known = 0;
+      skip = new Set();
+      // Start in the open space above the name.
+      const start = nearestFree(
+        Math.floor(cols * 0.72),
+        Math.floor(rows * 0.12),
+      );
+      [robot.x, robot.y] = center(start);
+      robot.th = -Math.PI * 0.75;
+      path = [];
+      goal = null;
+      userGoal = false;
+      trail = [];
+      readColors();
+      repaintMap();
+      scan();
+    };
+
+    const clear = (i: number, grid: Uint8Array | number[], v: number) => {
+      const c = i % cols,
+        r = Math.floor(i / cols);
+      for (let dy = -1; dy <= 1; dy++)
+        for (let dx = -1; dx <= 1; dx++) {
+          const x = c + dx,
+            y = r + dy;
+          if (x < 0 || y < 0 || x >= cols || y >= rows) return false;
+          if (grid[idx(x, y)] === v) return false;
+        }
+      return true;
+    };
+    function nearestFree(c: number, r: number) {
+      for (let rad = 0; rad < Math.max(cols, rows); rad++)
+        for (let dy = -rad; dy <= rad; dy++)
+          for (let dx = -rad; dx <= rad; dx++) {
+            const x = c + dx,
+              y = r + dy;
+            if (x < 1 || y < 1 || x >= cols - 1 || y >= rows - 1) continue;
+            const i = idx(x, y);
+            if (!truth[i] && clear(i, truth, 1)) return i;
+          }
+      return idx(1, 1);
+    }
+
+    const scan = () => {
+      const n = w < 600 ? 60 : 90;
+      hits = [];
+      for (let k = 0; k < n; k++) {
+        const a = robot.th + (k / n) * Math.PI * 2;
+        const dx = Math.cos(a),
+          dy = Math.sin(a);
+        for (let d = 0; d < RANGE; d += CELL * 0.5) {
+          const x = robot.x + dx * d,
+            y = robot.y + dy * d;
+          if (!inside(x, y)) break;
+          const i = cellOf(x, y);
+          if (truth[i]) {
+            setBelief(i, OCC);
+            hits.push([x, y]);
+            break;
+          }
+          setBelief(i, FREE);
+        }
+      }
+    };
+
+    // A* over the belief grid; unknown space is optimistically passable.
+    const plan = (from: number, to: number) => {
+      const n = cols * rows;
+      const blocked = new Uint8Array(n);
+      for (let i = 0; i < n; i++) {
+        if (belief[i] !== OCC) continue;
+        const c = i % cols,
+          r = Math.floor(i / cols);
+        for (let dy = -1; dy <= 1; dy++)
+          for (let dx = -1; dx <= 1; dx++) {
+            const x = c + dx,
+              y = r + dy;
+            if (x >= 0 && y >= 0 && x < cols && y < rows)
+              blocked[idx(x, y)] = 1;
+          }
+      }
+      // Never trap the robot inside its own inflation margin.
+      const fc = from % cols,
+        fr = Math.floor(from / cols);
+      for (let dy = -1; dy <= 1; dy++)
+        for (let dx = -1; dx <= 1; dx++) {
+          const j = idx(fc + dx, fr + dy);
+          if (belief[j] !== OCC) blocked[j] = 0;
+        }
+      if (blocked[to]) return null;
+      const g = new Float32Array(n).fill(Infinity);
+      const parent = new Int32Array(n).fill(-1);
+      const tc = to % cols,
+        tr = Math.floor(to / cols);
+      const hfn = (i: number) => {
+        const dx = Math.abs((i % cols) - tc),
+          dy = Math.abs(Math.floor(i / cols) - tr);
+        return Math.max(dx, dy) + 0.414 * Math.min(dx, dy);
+      };
+      const heap: [number, number][] = [];
+      const push = (f: number, i: number) => {
+        heap.push([f, i]);
+        let k = heap.length - 1;
+        while (k > 0) {
+          const p = (k - 1) >> 1;
+          if (heap[p][0] <= heap[k][0]) break;
+          [heap[p], heap[k]] = [heap[k], heap[p]];
+          k = p;
+        }
+      };
+      const pop = () => {
+        const top = heap[0];
+        const last = heap.pop()!;
+        if (heap.length) {
+          heap[0] = last;
+          let k = 0;
+          for (;;) {
+            const l = 2 * k + 1,
+              r = l + 1;
+            let m = k;
+            if (l < heap.length && heap[l][0] < heap[m][0]) m = l;
+            if (r < heap.length && heap[r][0] < heap[m][0]) m = r;
+            if (m === k) break;
+            [heap[m], heap[k]] = [heap[k], heap[m]];
+            k = m;
+          }
+        }
+        return top;
+      };
+      g[from] = 0;
+      push(hfn(from), from);
+      while (heap.length) {
+        const [, i] = pop();
+        if (i === to) break;
+        const c = i % cols,
+          r = Math.floor(i / cols);
+        for (let dy = -1; dy <= 1; dy++)
+          for (let dx = -1; dx <= 1; dx++) {
+            if (!dx && !dy) continue;
+            const x = c + dx,
+              y = r + dy;
+            if (x < 0 || y < 0 || x >= cols || y >= rows) continue;
+            const j = idx(x, y);
+            if (blocked[j]) continue;
+            if (
+              dx &&
+              dy &&
+              (blocked[idx(c + dx, r)] || blocked[idx(c, r + dy)])
+            )
+              continue;
+            const cost = g[i] + (dx && dy ? 1.414 : 1);
+            if (cost < g[j]) {
+              g[j] = cost;
+              parent[j] = i;
+              push(cost + hfn(j), j);
+            }
+          }
+      }
+      if (parent[to] === -1 && to !== from) return null;
+      const out: [number, number][] = [];
+      for (let i = to; i !== -1; i = parent[i]) out.push(center(i));
+      return out.reverse();
+    };
+
+    const pickFrontier = () => {
+      let best = -1,
+        bestScore = Infinity;
+      for (let i = 0; i < belief.length; i++) {
+        if (belief[i] !== FREE || skip.has(i)) continue;
+        const c = i % cols,
+          r = Math.floor(i / cols);
+        if (
+          belief[idx(c + 1, r)] !== UNKNOWN &&
+          belief[idx(c - 1, r)] !== UNKNOWN &&
+          belief[idx(c, r + 1)] !== UNKNOWN &&
+          belief[idx(c, r - 1)] !== UNKNOWN
+        )
+          continue;
+        if (!clear(i, belief, OCC)) continue;
+        const [x, y] = center(i);
+        const d = Math.hypot(x - robot.x, y - robot.y);
+        if (d < CELL * 4) continue;
+        const score = d * (0.6 + Math.random() * 0.8);
+        if (score < bestScore) {
+          bestScore = score;
+          best = i;
+        }
+      }
+      return best;
+    };
+
+    const setGoal = (i: number, fromUser = false) => {
+      const p = plan(cellOf(robot.x, robot.y), i);
+      if (!p) {
+        skip.add(i);
+        return false;
+      }
+      path = p;
+      pathIdx = 0;
+      goal = center(i);
+      userGoal = fromUser;
+      replanIn = 0.6;
+      return true;
+    };
+
+    const nextGoal = () => {
+      for (let tries = 0; tries < 6; tries++) {
+        const f = pickFrontier();
+        if (f < 0) break;
+        if (setGoal(f)) return;
+      }
+      // Map complete: wander to random known free cells, then start over.
+      if (doneFor > 6) {
+        belief.fill(UNKNOWN);
+        known = 0;
+        skip.clear();
+        trail = [];
+        doneFor = 0;
+        repaintMap();
+        return;
+      }
+      for (let tries = 0; tries < 20; tries++) {
+        const i = Math.floor(Math.random() * belief.length);
+        if (belief[i] === FREE && clear(i, belief, OCC) && setGoal(i)) return;
+      }
+    };
+
+    const step = (dt: number) => {
+      if (!goal || pathIdx >= path.length) {
+        goal = null;
+        nextGoal();
+        if (!goal) return;
+      }
+      replanIn -= dt;
+      if (replanIn <= 0 && goal) {
+        const g = cellOf(goal[0], goal[1]);
+        if (!setGoal(g, userGoal)) {
+          goal = null;
+          return;
+        }
+      }
+      while (
+        pathIdx < path.length - 1 &&
+        Math.hypot(path[pathIdx][0] - robot.x, path[pathIdx][1] - robot.y) < 22
+      )
+        pathIdx++;
+      const [tx, ty] = path[pathIdx];
+      const dist = Math.hypot(tx - robot.x, ty - robot.y);
+      if (pathIdx === path.length - 1 && dist < 5) {
+        goal = null;
+        userGoal = false;
+        return;
+      }
+      let e = Math.atan2(ty - robot.y, tx - robot.x) - robot.th;
+      e = Math.atan2(Math.sin(e), Math.cos(e));
+      robot.th += Math.max(-3.5, Math.min(3.5, e * 4)) * dt;
+      const v = Math.abs(e) > 1.1 ? 0 : SPEED * (1 - Math.abs(e) / 1.4);
+      const nx = robot.x + Math.cos(robot.th) * v * dt;
+      const ny = robot.y + Math.sin(robot.th) * v * dt;
+      if (inside(nx, ny) && !truth[cellOf(nx, ny)]) {
+        robot.x = nx;
+        robot.y = ny;
+      } else {
+        replanIn = 0;
+      }
+      const last = trail[trail.length - 1];
+      if (!last || Math.hypot(last[0] - robot.x, last[1] - robot.y) > 4) {
+        trail.push([robot.x, robot.y]);
+        if (trail.length > 700) trail.shift();
+      }
+      scan();
+      if (open && known / open > 0.97) doneFor += dt;
+    };
+
+    const draw = () => {
+      ctx.clearRect(0, 0, w, h);
+      ctx.drawImage(map, 0, 0, w, h);
+
+      ctx.strokeStyle = colors.accent;
+      ctx.globalAlpha = 0.14;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      for (const [x, y] of hits) {
+        ctx.moveTo(robot.x, robot.y);
+        ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.globalAlpha = 0.9;
+      ctx.fillStyle = colors.accent;
+      for (const [x, y] of hits) ctx.fillRect(x - 1.5, y - 1.5, 3, 3);
+
+      ctx.globalAlpha = 0.4;
+      ctx.strokeStyle = colors.ink;
+      ctx.beginPath();
+      trail.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)));
+      ctx.stroke();
+
+      if (goal && pathIdx < path.length) {
+        ctx.globalAlpha = 0.85;
+        ctx.strokeStyle = colors.accent;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(robot.x, robot.y);
+        for (let i = pathIdx; i < path.length; i++) ctx.lineTo(...path[i]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        const [gx, gy] = goal;
+        ctx.beginPath();
+        ctx.moveTo(gx - 6, gy);
+        ctx.lineTo(gx + 6, gy);
+        ctx.moveTo(gx, gy - 6);
+        ctx.lineTo(gx, gy + 6);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(gx, gy, 9, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = colors.accent;
+      ctx.beginPath();
+      ctx.arc(robot.x, robot.y, 7, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = colors.page;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(robot.x, robot.y);
+      ctx.lineTo(
+        robot.x + Math.cos(robot.th) * 7,
+        robot.y + Math.sin(robot.th) * 7,
+      );
+      ctx.stroke();
+    };
+
+    let readoutAt = 0;
+    const updateReadout = (t: number) => {
+      if (!readout || t - readoutAt < 200) return;
+      readoutAt = t;
+      const deg = Math.round(
+        ((((robot.th * 180) / Math.PI) % 360) + 360) % 360,
+      );
+      const pct = open ? Math.min(100, Math.round((known / open) * 100)) : 0;
+      readout.textContent = `map ${pct}%  pose ${Math.round(robot.x)}, ${Math.round(robot.y)}, ${deg}°`;
+    };
+
+    let running = false,
+      visible = true,
+      prev = 0;
+    const loop = (t: number) => {
+      if (!running) return;
+      const dt = Math.min(0.05, (t - prev) / 1000 || 0.016);
+      prev = t;
+      step(dt);
+      draw();
+      updateReadout(t);
+      requestAnimationFrame(loop);
+    };
+    const setRunning = () => {
+      const should = visible && !document.hidden && !reduceMotion;
+      if (should && !running) {
+        running = true;
+        prev = performance.now();
+        requestAnimationFrame(loop);
+      } else if (!should) running = false;
+    };
+
+    const start = () => {
+      build();
+      if (reduceMotion) {
+        for (let k = 0; k < 900; k++) step(1 / 30);
+        draw();
+        updateReadout(Infinity);
+      }
+      setRunning();
+    };
+
+    frame.addEventListener("click", (event) => {
+      if ((event.target as Element).closest("a, button")) return;
+      const box = canvas.getBoundingClientRect();
+      const x = event.clientX - box.left,
+        y = event.clientY - box.top;
+      if (!inside(x, y)) return;
+      const c = Math.floor(x / CELL),
+        r = Math.floor(y / CELL);
+      const target =
+        belief[idx(c, r)] === OCC || truth[idx(c, r)]
+          ? nearestFree(c, r)
+          : idx(c, r);
+      skip.delete(target);
+      setGoal(target, true);
+      if (reduceMotion) draw();
+    });
+
+    new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      setRunning();
+    }).observe(frame);
+    document.addEventListener("visibilitychange", setRunning);
+
+    let resizeTimer = 0;
+    const resizer = new ResizeObserver(() => {
+      clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(start, 200);
+    });
+    // Text reflow (e.g. a late web font) moves the walls without resizing
+    // the frame, so watch the content too.
+    for (const el of [frame, ...frame.querySelectorAll(".hero-content > *")])
+      resizer.observe(el);
+
+    const retheme = () => {
+      readColors();
+      repaintMap();
+      if (!running) draw();
+    };
+    new MutationObserver(retheme).observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+    matchMedia("(prefers-color-scheme: dark)").addEventListener(
+      "change",
+      retheme,
+    );
+
+    // Web fonts change the text boxes the robot treats as walls.
+    document.fonts.ready.then(start);
+    document.fonts.addEventListener("loadingdone", start);
+  }
+</script>

@@ -1,30 +1,82 @@
 ---
 import Navbar from "../components/Navbar.astro";
+import { links } from "../data/portfolio";
 import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "Nathan Van Utrecht | Robotics Engineer & Researcher",
+  description = "Nathan Van Utrecht is a robotics MS student working on dexterous manipulation, perception, and robot learning.",
+} = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <link rel="icon" href="/favicon.ico" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
-      rel="stylesheet"
-    />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
-    <title>Nathan Van Utrecht</title>
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: light)"
+      content="#fafaf8"
+    />
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: dark)"
+      content="#0e0f11"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content="/headshot.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href="/favicon.svg" />
+    <script is:inline>
+      try {
+        const theme = localStorage.getItem("portfolio-theme");
+        if (theme === "light" || theme === "dark")
+          document.documentElement.dataset.theme = theme;
+      } catch {
+        /* Fall back to the system preference. */
+      }
+    </script>
+    <title>{title}</title>
   </head>
-  <body
-    class="bg-background flex min-h-screen flex-col items-center justify-center"
-  >
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
     <Navbar />
-    <div class="w-full max-w-6xl px-4 md:px-6 lg:px-0">
+    <main id="main-content">
       <slot />
-    </div>
+    </main>
+    <footer class="site-footer" id="contact">
+      <div class="site-shell">
+        <p class="footer-note">
+          Open to robotics, robot learning, and autonomy roles. Email is the
+          fastest way to reach me.
+        </p>
+        <dl class="contact-block">
+          <div>
+            <dt>Email</dt>
+            <dd><a href={`mailto:${links.email}`}>{links.email}</a></dd>
+          </div>
+          <div>
+            <dt>Elsewhere</dt>
+            <dd class="contact-links">
+              <a href={links.github} target="_blank" rel="noreferrer">GitHub</a>
+              <a href={links.linkedin} target="_blank" rel="noreferrer"
+                >LinkedIn</a
+              >
+              <a href={links.cv} target="_blank" rel="noreferrer">CV</a>
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </footer>
   </body>
 </html>

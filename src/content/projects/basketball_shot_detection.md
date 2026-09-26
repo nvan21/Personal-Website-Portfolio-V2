@@ -1,7 +1,7 @@
 ---
 title: "Basketball Shot Detection" 
 pitch: "A computer vision tool that uses YOLOv8 and image segmentation to automatically track basketball shots, predicting their outcomes with physics-based and parabolic trajectory analysis."
-image: "basketball_tracker_thumbnail.png" 
+image: "basketball_tracker_thumbnail.webp" 
 skills:
 - Computer Vision
 - YOLOv8

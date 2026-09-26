@@ -1,0 +1,22 @@
+---
+import { toolkit } from "../data/portfolio";
+---
+
+<section id="toolkit" class="sheet-section" aria-labelledby="toolkit-title">
+  <div class="site-shell section-grid">
+    <header class="section-label">
+      <h2 id="toolkit-title">Toolkit</h2>
+      <p>What I reach for</p>
+    </header>
+    <dl class="spec-list">
+      {
+        toolkit.map((row) => (
+          <div>
+            <dt>{row.area}</dt>
+            <dd>{row.items}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+</section>

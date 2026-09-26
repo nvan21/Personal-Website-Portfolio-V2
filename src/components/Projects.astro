@@ -1,20 +1,84 @@
 ---
 import { getCollection } from "astro:content";
-import ProjectCard from "../components/ProjectCard.astro";
-import BackdropText from "./BackdropText.astro";
+import { Icon } from "astro-icon/components";
+import { projectDetails } from "../data/portfolio";
 
-// Fetch all projects and sort them by date (newest first)
-const allProjects = await getCollection("projects");
-const sortedProjects = allProjects.sort(
-  (a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf(),
-);
+// Curated projects first in display order, then any others by date.
+const order = Object.keys(projectDetails);
+const rank = (slug: string) =>
+  order.includes(slug) ? order.indexOf(slug) : order.length;
+const projects = (await getCollection("projects"))
+  .sort(
+    (a, b) =>
+      rank(a.slug) - rank(b.slug) ||
+      b.data.publishDate.valueOf() - a.data.publishDate.valueOf(),
+  )
+  .map((project) => {
+    const { title, pitch, skills, image, githubUrl, publishDate } =
+      project.data;
+    const detail = projectDetails[project.slug];
+    return {
+      slug: project.slug,
+      title: detail?.title ?? title,
+      pitch: detail?.pitch ?? pitch,
+      area: detail?.area ?? skills[0],
+      methods: detail?.methods ?? skills.slice(0, 3).join(", "),
+      image: `/images/${image}`,
+      url: githubUrl,
+      year: publishDate.getUTCFullYear(),
+    };
+  });
+const years = projects.map((p) => p.year);
 ---
 
-<div id="projects">
-  <BackdropText backdropText="Projects" text="Projects" />
-
-  <!-- Responsive Project Grid -->
-  <div class="mb-12 grid grid-cols-1 gap-6 md:grid-cols-2 md:auto-rows-fr">
-    {sortedProjects.map((project) => <ProjectCard {project} />)}
+<section id="work" class="sheet-section" aria-labelledby="work-title">
+  <div class="site-shell section-grid">
+    <header class="section-label">
+      <h2 id="work-title">Work</h2>
+      <p>
+        {projects.length} projects, {Math.min(...years)} to {Math.max(...years)}
+      </p>
+    </header>
+    {
+      projects.length ? (
+        <ol class="work-list">
+          {projects.map((p) => {
+            const Tag = p.url ? "a" : "div";
+            return (
+              <li id={`p-${p.slug}`}>
+                <Tag
+                  class="work-row"
+                  {...(p.url
+                    ? { href: p.url, target: "_blank", rel: "noreferrer" }
+                    : {})}
+                >
+                  <span class="work-thumb">
+                    <img
+                      src={p.image}
+                      alt=""
+                      width="160"
+                      height="100"
+                      loading="lazy"
+                    />
+                  </span>
+                  <span class="work-main">
+                    <span class="work-title">{p.title}</span>
+                    <span class="work-pitch">{p.pitch}</span>
+                    <span class="work-methods">{p.methods}</span>
+                  </span>
+                  <span class="work-area">{p.area}</span>
+                  <span class="work-year">{p.year}</span>
+                  <span class="work-arrow" aria-hidden="true">
+                    {p.url && <Icon name="tabler:arrow-up-right" />}
+                  </span>
+                </Tag>
+              </li>
+            );
+          })}
+        </ol>
+      ) : (
+        <p class="empty-state">Project write-ups are on the way.</p>
+      )
+    }
   </div>
-</div>
+</section>

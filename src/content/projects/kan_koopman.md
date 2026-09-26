@@ -1,7 +1,7 @@
 ---
 title: "Data-Efficient Koopman Modeling with KANs"
 pitch: "A novel machine learning approach that combines Kolmogorov-Arnold Networks with Koopman operator theory to enable data-efficient, real-time control of soft robots with infinite degrees of freedom."
-image: "kan_koopman_thumbnail.png"
+image: "kan_koopman_thumbnail.webp"
 skills:
 - Koopman Operator Theory
 - Deep Learning
