@@ -11,7 +11,12 @@ export const toolkit = [
   {
     area: "Estimation & SLAM",
     items:
-      "EKF, factor graphs (GTSAM), ICP scan matching, quaternion optimization",
+      "EKF, factor graphs (GTSAM), bundle adjustment, ICP, camera calibration",
+  },
+  {
+    area: "AI evaluation",
+    items:
+      "Golden datasets, commit-pinned eval runs, regression diffs, agent harnesses",
   },
   {
     area: "Robot learning",
@@ -19,16 +24,12 @@ export const toolkit = [
   },
   {
     area: "Perception",
-    items: "YOLOv8, CNNs, vision transformers, segmentation",
+    items:
+      "Multi-camera geometry, stereo depth, lidar fusion, YOLOv8, CNNs, ViTs",
   },
   {
     area: "Planning & control",
-    items:
-      "Kinematics, screw trajectories, feedforward + PI, Koopman models, ROS",
-  },
-  {
-    area: "Mechanical",
-    items: "Creo Parametric, Windchill, FEA, prototyping and validation",
+    items: "Kinematics, trajectory planning, Koopman models, ROS",
   },
 ];
 
@@ -41,6 +42,20 @@ export interface ProjectDetail {
 
 // Key order is display order.
 export const projectDetails: Record<string, ProjectDetail> = {
+  ai_hill_climbing: {
+    title: "AI hill-climbing on a robot perception pipeline",
+    pitch:
+      "Coding agents propose a change, run the real pipeline pinned to that commit, and score it against a 25k-label golden set. Held-out precision rose 0.49 → 0.95 at full recall, and the winning change shipped to production.",
+    area: "Learning",
+    methods: "LLM agents, golden datasets, regression diffs",
+  },
+  global_association: {
+    title: "Pixels to meters: pallet mapping",
+    pitch:
+      "Projects each barcode read from a 4-camera tower onto the rack face in world coordinates, replacing pixel heuristics. False exceptions fell 90% at 100% recall, now live at 10+ customer sites.",
+    area: "Perception",
+    methods: "Multi-camera geometry, calibration, pose graphs",
+  },
   ekf_vi_slam: {
     title: "Visual-inertial SLAM",
     pitch:
@@ -130,14 +145,14 @@ export const experience: Role[] = [
       "Using real-world robot data to make simulation more faithful, so learned policies survive the move to hardware.",
     current: true,
   },
-  // TODO: placeholder until Brain Corp details are filled in.
   {
-    date: "TBD",
+    date: "2026",
     kind: "Industry",
     org: "Brain Corp",
     place: "San Diego",
-    role: "Engineering intern",
-    notes: "Details coming soon.",
+    role: "Software engineering intern",
+    notes:
+      "Built an eval harness that lets AI coding agents hill-climb a warehouse robot's perception pipeline against a <b>25k</b>-label golden set; held-out precision rose <b>0.49 → 0.95</b> at full recall. With my move to metric world-coordinate association, false exceptions fell <b>90%</b> in production. Also debugged deployed robots down to the core dump.",
   },
   {
     date: "2024 – 25",

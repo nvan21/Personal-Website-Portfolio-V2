@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <rect width="320" height="200" fill="#fff" stroke="none"/>
+  <g stroke="#bdbdb6" stroke-width="1.5">
+    <path d="M52 55L190 48M52 55L240 92M52 85L190 92M52 85L290 132M52 115L240 132M52 145L190 168"/>
+  </g>
+  <path d="M52 115L262 88" stroke="#d4450e" stroke-width="2.5"/>
+  <g stroke="#111214" stroke-width="3">
+    <path d="M165 30V180M215 30V180M265 30V180M300 30V180"/>
+    <path d="M165 70H300M165 112H300M165 150H300M160 180H305"/>
+  </g>
+  <rect x="222" y="118" width="36" height="28" stroke="#d4450e" stroke-width="3"/>
+  <rect x="234" y="76" width="18" height="10" fill="#d4450e" stroke="none"/>
+  <path d="M40 40V180" stroke="#111214" stroke-width="4"/>
+  <g fill="#111214" stroke="none">
+    <rect x="42" y="49" width="12" height="12"/>
+    <rect x="42" y="79" width="12" height="12"/>
+    <rect x="42" y="109" width="12" height="12"/>
+    <rect x="42" y="139" width="12" height="12"/>
+    <rect x="24" y="172" width="36" height="10"/>
+  </g>
+  <g fill="#111214" stroke="none">
+    <circle cx="190" cy="48" r="4"/>
+    <circle cx="240" cy="92" r="4"/>
+    <circle cx="190" cy="92" r="4"/>
+    <circle cx="290" cy="132" r="4"/>
+    <circle cx="240" cy="132" r="4"/>
+    <circle cx="190" cy="168" r="4"/>
+  </g>
+</svg>
