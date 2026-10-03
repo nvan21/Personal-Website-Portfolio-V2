@@ -1,0 +1,42 @@
+---
+import { education } from "../data/portfolio";
+---
+
+<section
+  id="education"
+  class="sheet-section"
+  aria-labelledby="education-title"
+>
+  <div class="site-shell section-grid">
+    <header class="section-label">
+      <h2 id="education-title">Education</h2>
+      <p>{education.length} degrees</p>
+    </header>
+    <table class="exp-table">
+      <thead>
+        <tr>
+          <th scope="col">Date</th>
+          <th scope="col">Where</th>
+          <th scope="col">Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          education.map((d) => (
+            <tr>
+              <td class="exp-date">{d.date}</td>
+              <th scope="row" class="exp-where">
+                <strong>{d.school}</strong>
+                <span>{d.place}</span>
+              </th>
+              <td class="exp-notes">
+                <p>{d.degree}</p>
+                {d.notes && <p set:html={d.notes} />}
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

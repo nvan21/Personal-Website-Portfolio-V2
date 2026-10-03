@@ -2,7 +2,7 @@
 
 export const links = {
   cv: "/Nathan_VanUtrecht_CV.pdf",
-  email: "nvanutrecht@ucsd.edu",
+  email: "nvanutrecht@gmail.com",
   github: "https://github.com/nvan21?tab=repositories",
   linkedin: "https://www.linkedin.com/in/nathan-van-utrecht",
 };
@@ -42,19 +42,19 @@ export interface ProjectDetail {
 
 // Key order is display order.
 export const projectDetails: Record<string, ProjectDetail> = {
-  ai_hill_climbing: {
-    title: "AI hill-climbing on a robot perception pipeline",
-    pitch:
-      "Coding agents propose a change, run the real pipeline pinned to that commit, and score it against a 25k-label golden set. Held-out precision rose 0.49 → 0.95 at full recall, and the winning change shipped to production.",
-    area: "Learning",
-    methods: "LLM agents, golden datasets, regression diffs",
-  },
   global_association: {
     title: "Pixels to meters: pallet mapping",
     pitch:
-      "Projects each barcode read from a 4-camera tower onto the rack face in world coordinates, replacing pixel heuristics. False exceptions fell 90% at 100% recall, now live at 10+ customer sites.",
+      "Projects each barcode read from a 4-camera tower onto the rack face in world coordinates, replacing pixel heuristics. Precision rose 0.33 → 0.93 at 100% recall, and it is now live at 10+ customer sites.",
     area: "Perception",
     methods: "Multi-camera geometry, calibration, pose graphs",
+  },
+  ai_hill_climbing: {
+    title: "AI hill-climbing on a robot perception pipeline",
+    pitch:
+      "Coding agents propose a change, run the real pipeline pinned to that commit, and score it against a 25k-label golden set. The loop found the association change that shipped to production.",
+    area: "Learning",
+    methods: "LLM agents, golden datasets, regression diffs",
   },
   ekf_vi_slam: {
     title: "Visual-inertial SLAM",
@@ -101,7 +101,7 @@ export const projectDetails: Record<string, ProjectDetail> = {
   ppo_algorithm_implementation: {
     title: "PPO from scratch",
     pitch:
-      "Proximal Policy Optimization written in PyTorch and trained on four Gymnasium tasks, from CartPole and LunarLander to MuJoCo Hopper and HalfCheetah.",
+      "Proximal Policy Optimization written in PyTorch and trained on Gymnasium tasks from CartPole and LunarLander to MuJoCo Hopper and HalfCheetah, matching Stable-Baselines3 on 5 benchmarks.",
     area: "Learning",
     methods: "PyTorch, Gymnasium",
   },
@@ -140,9 +140,9 @@ export const experience: Role[] = [
     kind: "Research",
     org: "Xiaolong Wang Lab",
     place: "UC San Diego",
-    role: "Graduate researcher",
+    role: "Graduate student researcher",
     notes:
-      "Using real-world robot data to make simulation more faithful, so learned policies survive the move to hardware.",
+      "Co-designing dexterous hands and policies for Rubik's Cube solving on an Amazon-sponsored project. One JAX PPO policy covers <b>2,048</b> generated hand designs, and on hardware the physical hand solved a scrambled cube.",
     current: true,
   },
   {
@@ -152,16 +152,16 @@ export const experience: Role[] = [
     place: "San Diego",
     role: "Software engineering intern",
     notes:
-      "Built an eval harness that lets AI coding agents hill-climb a warehouse robot's perception pipeline against a <b>25k</b>-label golden set; held-out precision rose <b>0.49 → 0.95</b> at full recall. With my move to metric world-coordinate association, false exceptions fell <b>90%</b> in production. Also debugged deployed robots down to the core dump.",
+      "Shipped metric world-coordinate association for a warehouse robot's 4-camera perception pipeline: precision rose <b>0.33 → 0.93</b> at full recall, live at <b>10+</b> customer sites. Built the <b>25k</b>-label eval platform and the harness that let AI coding agents hill-climb it, plus a bundle-adjustment stitcher <b>48×</b> faster than the existing one.",
   },
   {
-    date: "2024 – 25",
+    date: "2023 – 25",
     kind: "Research",
     org: "Coordinated Systems Lab",
     place: "Iowa State",
-    role: "Honors researcher",
+    role: "Undergraduate researcher",
     notes:
-      "Stress-tested BC, GAIL, and AIRL under shifted physics and goals. Wrote it up as my honors thesis.",
+      "Stress-tested BC, GAIL, and AIRL under shifted physics and goals; AIRL beat direct imitation by <b>140%+</b> on transfer tasks. Wrote it up as my honors thesis.",
     links: [
       {
         label: "thesis",
@@ -178,9 +178,9 @@ export const experience: Role[] = [
     kind: "Research",
     org: "TrAC REU",
     place: "Iowa State",
-    role: "Research intern",
+    role: "REU researcher",
     notes:
-      "Benchmarked model-based and model-free RL for sim-to-real. SAC reached an expert policy <b>5×</b> faster.",
+      "Benchmarked model-based and model-free RL for sim-to-real. SAC converged <b>5×</b> faster than SHAC and was more robust to noise.",
     links: [
       {
         label: "slides",
@@ -193,19 +193,43 @@ export const experience: Role[] = [
     date: "2023",
     kind: "Industry",
     org: "John Deere",
-    place: "Product engineering",
-    role: "Engineering intern",
+    place: "Augusta, GA",
+    role: "Product engineering intern",
     notes:
-      "Took a tool-storage bracket from Creo concept to physical test; FEA cut its weight <b>15%</b>. Four CAD concepts for new tractor cab features.",
+      "Took a tool-storage bracket from Creo concept to physical test; FEA and topology optimization cut its weight <b>25%</b>. Four CAD concepts for new tractor cab features.",
   },
   {
     date: "2022 – 23",
     kind: "Industry",
     org: "Grace Technologies",
-    place: "IIoT engineering",
-    role: "Engineering intern",
+    place: "Davenport, IA",
+    role: "Software engineering intern",
     notes:
-      "Six Python validation suites (<b>&gt;80%</b> less manual testing) and a field debugger that cut callbacks <b>40%</b>.",
+      "Six Python validation suites (<b>&gt;80%</b> less manual testing, coverage <b>60% → 95%</b>) and a field debugger that cut troubleshooting from 45 to under 10 minutes and callbacks <b>40%</b>.",
   },
 ];
 
+export interface Degree {
+  date: string;
+  school: string;
+  place: string;
+  degree: string;
+  notes?: string;
+}
+
+export const education: Degree[] = [
+  {
+    date: "2025 – 27",
+    school: "UC San Diego",
+    place: "San Diego, CA",
+    degree: "M.S. Intelligent Systems, Robotics, and Control",
+    notes: "Expected June 2027.",
+  },
+  {
+    date: "2021 – 25",
+    school: "Iowa State University",
+    place: "Ames, IA",
+    degree: "B.S. Mechanical Engineering, minor in Cyber Physical Systems",
+    notes: "GPA <b>3.98</b>/4.00, summa cum laude, University Honors Program, Tau Beta Pi.",
+  },
+];
