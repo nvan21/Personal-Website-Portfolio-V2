@@ -223,7 +223,7 @@ export const education: Degree[] = [
     school: "UC San Diego",
     place: "San Diego, CA",
     degree: "M.S. Intelligent Systems, Robotics, and Control",
-    notes: "Expected June 2027.",
+    notes: "Expected March 2027.",
   },
   {
     date: "2021 – 25",
